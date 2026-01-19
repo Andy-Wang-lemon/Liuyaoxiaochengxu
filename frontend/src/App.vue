@@ -1,0 +1,35 @@
+<template>
+  <router-view />
+</template>
+
+<script setup lang="ts">
+// App 根组件
+</script>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Times New Roman", "Songti SC", serif;
+  min-height: 100vh;
+  background: #0f152b url('/images/bg-bamboo.jpg') center center / cover fixed;
+  color: #d4af37;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
+  pointer-events: none;
+}
+</style>
+
+
