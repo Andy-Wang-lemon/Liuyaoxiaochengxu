@@ -1,0 +1,170 @@
+<!--pages/shake/shake.wxml-->
+<view class="container">
+  <!-- 遮罩层（用于关闭下拉列表） -->
+  <view class="dropdown-mask" wx:if="{{showCityDropdown}}" bindtap="closeCityDropdown"></view>
+  
+  
+  <!-- 使用说明版块 -->
+  <view class="intro-card">
+    <view class="intro-header">
+      <text class="intro-title">使用说明</text>
+    </view>
+    
+    <view class="intro-content">
+      
+      <!-- 使用流程 -->
+      <view class="intro-section">
+        <view class="intro-steps">
+          <view class="step-item">
+            <view class="step-number">1</view>
+            <view class="step-content">
+              <text class="step-title">填写信息</text>
+              <text class="step-desc">选择城市、填写姓名和所问事项</text>
+            </view>
+          </view>
+          
+          <view class="step-item">
+            <view class="step-number">2</view>
+            <view class="step-content">
+              <text class="step-title">摇动六次</text>
+              <text class="step-desc">心中默念所问之事，点击摇动6次</text>
+            </view>
+          </view>
+          
+          <view class="step-item">
+            <view class="step-number">3</view>
+            <view class="step-content">
+              <text class="step-title">获得启发</text>
+              <text class="step-desc">从传统文化中获得人生思考和学习参考</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 温馨提示 -->
+      <view class="intro-tip">
+        提示：问答时请专注思考，建议针对具体问题进行咨询，避免重复询问。
+      </view>
+    </view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-msg" wx:if="{{errorMsg}}">{{errorMsg}}</view>
+  
+  <!-- 表单区域 -->
+  <view class="card">
+    <view class="input-group">
+      <view class="input-label">起卦城市 <text class="required">*</text></view>
+      <input 
+        class="input-field" 
+        placeholder="输入城市名称搜索" 
+        value="{{formData.location}}" 
+        bindinput="onCityInput"
+        bindfocus="onCityFocus"
+      />
+      <view class="city-tip">支持搜索：北京、上海、纽约、伦敦等26个城市</view>
+      
+      <!-- 城市搜索结果下拉列表 -->
+      <view class="city-dropdown" wx:if="{{showCityDropdown && filteredCities.length > 0}}">
+        <view 
+          class="city-option" 
+          wx:for="{{filteredCities}}" 
+          wx:key="name"
+          bindtap="selectCity"
+          data-city="{{item.name}}"
+          data-timezone="{{item.timezone}}"
+        >
+          <text class="city-name">{{item.name}}</text>
+          <text class="city-timezone">{{item.timezoneDisplay}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-label">起卦日期 <text class="required">*</text></view>
+      <picker mode="date" value="{{dateValue}}" bindchange="onDateChange">
+        <view class="picker-display">{{dateDisplay}}</view>
+      </picker>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-label">起卦时间 <text class="required">*</text></view>
+      <picker mode="time" value="{{timeValue}}" bindchange="onTimeChange">
+        <view class="picker-display">{{timeDisplay}}</view>
+      </picker>
+    </view>
+    
+    <view class="input-group">
+      <view class="input-label">测算人姓名 <text class="required">*</text></view>
+      <input class="input-field" placeholder="请输入姓名" value="{{formData.querentName}}" bindinput="onNameInput" />
+    </view>
+    
+    <view class="input-group">
+      <view class="input-label">所问何事 <text class="required">*</text></view>
+      <input class="input-field" placeholder="请输入所问事项" value="{{formData.question}}" bindinput="onQuestionInput" />
+    </view>
+  </view>
+  
+  <!-- 咨询区域 -->
+  <view class="card shake-section">
+    <view class="shake-title">{{isComplete ? '咨询完成（6/6次）' : '咨询（第 ' + (lines.length + 1) + ' / 6 次）'}}</view>
+    <view class="shake-info">点击"摇一下"按钮，系统会随机生成参考信息，帮助您思考问题</view>
+    <view class="shake-tip">摇动时请专注于您想了解的具体问题</view>
+    
+    <!-- 三个树叶 3D 翻转 -->
+    <view class="coins-container">
+      <view class="coin {{item.class}}" wx:for="{{coins}}" wx:key="index" wx:for-item="item">
+        <view class="coin-inner">
+          <image src="/images/leaf-yang.png" mode="aspectFit" class="leaf-img" />
+        </view>
+      </view>
+    </view>
+    
+    <button class="btn-primary shake-btn" disabled="{{isComplete || isShaking}}" bindtap="performShake">
+      {{isComplete ? '已完成咨询' : isShaking ? '摇动中...' : '摇一下'}}
+    </button>
+    
+    <view class="current-result" wx:if="{{currentResult}}">{{currentResult}}</view>
+  </view>
+  
+  <!-- 已完成的咨询 -->
+  <view class="card" wx:if="{{lines.length > 0}}">
+    <view class="section-title">咨询记录：</view>
+    <view class="line-item {{item.isMoving ? 'moving' : ''}}" wx:for="{{orderedLines}}" wx:for-item="item" wx:key="index">
+      <text class="line-label">第{{item.index}}爻：</text>
+      <text>{{item.description}}</text>
+    </view>
+  </view>
+  
+  <!-- 答疑按钮（完成6次咨询后显示） -->
+  <view class="card" wx:if="{{showInterpretBtn && !resultText}}">
+    <view class="section-title">咨询完成</view>
+    <view class="result-text">已收集到足够信息，点击下方按钮获取个性化答疑和建议</view>
+    
+    <button class="btn-primary interpret-btn" bindtap="handleInterpret">
+      获取答疑
+    </button>
+  </view>
+  
+  <!-- 分析结果 -->
+  <view class="card" wx:if="{{resultText}}">
+    <view class="section-title">分析结果</view>
+    <view class="result-text">{{resultText}}</view>
+  </view>
+  
+  <!-- 智能答疑结果 -->
+  <view class="card" wx:if="{{interpretationText}}">
+    <view class="section-title">智能答疑</view>
+    <view class="result-text">{{interpretationText}}</view>
+    
+    <!-- 分享按钮 -->
+    <view class="share-actions" wx:if="{{interpretationText}}">
+      <button class="btn-share" open-type="share">
+        分享结果
+      </button>
+      <view class="share-tip">分享包含分析和答疑的完整结果</view>
+    </view>
+  </view>
+  
+  <!-- 删除支付弹窗 -->
+</view>

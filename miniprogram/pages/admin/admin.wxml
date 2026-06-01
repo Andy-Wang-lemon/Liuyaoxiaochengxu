@@ -1,0 +1,23 @@
+<!--pages/admin/admin.wxml-->
+<view class="container">
+  <view class="page-title">管理后台</view>
+  
+  <view class="info-text">
+    管理后台功能建议在网页版查看
+  </view>
+  
+  <view class="card">
+    <view class="section-title">访问方式</view>
+    <view class="info-item">
+      <view class="info-label">网页地址：</view>
+      <view class="info-value">http://localhost:3003/admin</view>
+    </view>
+    <view class="info-item">
+      <view class="info-label">管理员令牌：</view>
+      <view class="info-value">admin</view>
+    </view>
+  </view>
+  
+  <button class="btn-primary" bindtap="copyUrl">复制网页地址</button>
+  <button class="btn-secondary" bindtap="backToHome">返回首页</button>
+</view>

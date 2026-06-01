@@ -188,25 +188,45 @@ const server = http.createServer((req, res) => {
       });
       req.on("end", () => {
         try {
-          const form = decodeBody(body);
-          const lines = parseLines(form);
+          let payload: InputPayload;
+          let lines: LineResult[];
+
+          // 检查是否为JSON格式
+          const contentType = req.headers['content-type'] || '';
+          if (contentType.includes('application/json')) {
+            // JSON格式
+            const jsonData = JSON.parse(body);
+            lines = jsonData.lines || [];
+            payload = {
+              location: jsonData.location ?? "",
+              timezone: jsonData.timezone ?? "",
+              datetime: jsonData.datetime ?? "",
+              querentName: jsonData.querentName ?? "",
+              question: jsonData.question ?? "",
+              lines: lines,
+            };
+          } else {
+            // Form格式
+            const form = decodeBody(body);
+            lines = parseLines(form);
+            payload = {
+              location: form.location ?? "",
+              timezone: form.timezone ?? "",
+              datetime: form.datetime ?? "",
+              querentName: form.querentName ?? "",
+              question: form.question ?? "",
+              lines: lines,
+            };
+          }
 
           if (lines.length !== 6) {
             res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
             res.end(JSON.stringify({ error: "请完成六次摇卦" }));
             return;
           }
-
-          const payload: InputPayload = {
-            location: form.location ?? "",
-            timezone: form.timezone ?? "",
-            datetime: form.datetime ?? "",
-            querentName: form.querentName ?? "",
-            question: form.question ?? "",
-            lines: lines,
-          };
           validateInput(payload);
-          const output = formatResult(payload);
+          // 后端排盘，但不返回详细结果
+          const result = calculate(payload);
           logUsage({
             userId,
             action: "shake",
@@ -215,7 +235,8 @@ const server = http.createServer((req, res) => {
             status: "ok",
           });
           res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-          res.end(JSON.stringify({ output }));
+          // 只返回成功标识，不返回排盘详细内容
+          res.end(JSON.stringify({ success: true, message: "排盘完成，请支付后查看结果" }));
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
           res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
@@ -234,22 +255,46 @@ const server = http.createServer((req, res) => {
       });
       req.on("end", async () => {
         try {
-          const form = decodeBody(body);
-          const lines = parseLines(form);
-          const payload: InputPayload = {
-            location: form.location ?? "",
-            timezone: form.timezone ?? "",
-            datetime: form.datetime ?? "",
-            querentName: form.querentName ?? "",
-            question: form.question ?? "",
-            lines: lines.length > 0 ? lines : undefined,
-          };
+          let payload: InputPayload;
+          let lines: LineResult[];
+
+          // 检查是否为JSON格式
+          const contentType = req.headers['content-type'] || '';
+          if (contentType.includes('application/json')) {
+            // JSON格式
+            const jsonData = JSON.parse(body);
+            lines = jsonData.lines || [];
+            payload = {
+              location: jsonData.location ?? "",
+              timezone: jsonData.timezone ?? "",
+              datetime: jsonData.datetime ?? "",
+              querentName: jsonData.querentName ?? "",
+              question: jsonData.question ?? "",
+              lines: lines.length > 0 ? lines : undefined,
+            };
+          } else {
+            // Form格式
+            const form = decodeBody(body);
+            lines = parseLines(form);
+            payload = {
+              location: form.location ?? "",
+              timezone: form.timezone ?? "",
+              datetime: form.datetime ?? "",
+              querentName: form.querentName ?? "",
+              question: form.question ?? "",
+              lines: lines.length > 0 ? lines : undefined,
+            };
+          }
+          
           validateInput(payload);
           const result = calculate(payload);
           const output = formatResult(payload);
           const interpretation = await interpretWithGemini(payload, result);
 
-          const isFollowUp = form.isFollowUp === "true";
+          // 检查是否为追问
+          const isFollowUp = contentType.includes('application/json') 
+            ? JSON.parse(body).isFollowUp === true
+            : decodeBody(body).isFollowUp === "true";
           logUsage({
             userId,
             action: isFollowUp ? "followup" : "interpret",
@@ -259,6 +304,7 @@ const server = http.createServer((req, res) => {
           });
 
           res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+          // 返回排盘结果和解卦结果
           res.end(JSON.stringify({ output, interpretation }));
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);

@@ -1,0 +1,474 @@
+/* pages/shake/shake.wxss */
+page {
+  background: linear-gradient(to bottom, #f0f9f0 0%, #ffffff 50%, #f8f8f8 100%);
+  min-height: 100vh;
+}
+
+.container {
+  padding: 30rpx 24rpx;
+  padding-bottom: 120rpx;
+  min-height: 100vh;
+}
+
+/* 遮罩层 */
+.dropdown-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: transparent;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2c5f2d;
+  text-align: center;
+  margin-bottom: 30rpx;
+  letter-spacing: 4rpx;
+  text-shadow: 0 2rpx 4rpx rgba(44, 95, 45, 0.1);
+}
+
+/* 使用说明版块 */
+.intro-card {
+  background-color: white;
+  border-radius: 20rpx;
+  margin-bottom: 30rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(76, 175, 80, 0.12);
+  border: 1rpx solid rgba(76, 175, 80, 0.1);
+}
+
+.intro-header {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 2rpx;
+}
+
+.intro-content {
+  background-color: white;
+  padding: 30rpx;
+}
+
+.intro-section {
+  margin-bottom: 30rpx;
+}
+
+.intro-section:last-child {
+  margin-bottom: 0;
+}
+
+.intro-section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1f3a;
+  margin-bottom: 15rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 2rpx solid #e0e0e0;
+}
+
+.intro-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.8;
+  display: block;
+}
+
+/* 步骤列表 */
+.intro-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.step-number {
+  width: 50rpx;
+  height: 50rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.3);
+}
+
+.step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.step-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1a1f3a;
+}
+
+.step-desc {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+/* 温馨提示 */
+.intro-tip {
+  background: linear-gradient(135deg, #fffef5 0%, #fff9e6 100%);
+  border-left: 4rpx solid #ffc107;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.8;
+  margin-top: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(255, 193, 7, 0.1);
+}
+
+.error-msg {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%);
+  color: #d32f2f;
+  padding: 24rpx 30rpx;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+  font-size: 26rpx;
+  border-left: 4rpx solid #d32f2f;
+  box-shadow: 0 4rpx 12rpx rgba(211, 47, 47, 0.1);
+}
+
+.input-group {
+  margin-bottom: 30rpx;
+  position: relative;
+}
+
+.input-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1f3a;
+  margin-bottom: 12rpx;
+}
+
+.label-tip {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #999;
+  margin-left: 8rpx;
+}
+
+.city-tip {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+  line-height: 1.5;
+}
+
+/* 城市下拉列表 */
+.city-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 120rpx;
+  background-color: white;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  max-height: 400rpx;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.city-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.city-option:last-child {
+  border-bottom: none;
+}
+
+.city-option:active {
+  background-color: #f5f5f5;
+}
+
+.city-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.city-timezone {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.input-field {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e8f5e9;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  background-color: white;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 4rpx rgba(76, 175, 80, 0.1);
+}
+
+.picker-display {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e8f5e9;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.time-display {
+  min-height: 80rpx;
+  padding: 20rpx 24rpx;
+  background-color: #f5f5f5;
+  border-radius: 12rpx;
+  color: #333;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* 咨询区域 */
+.shake-section {
+  text-align: center;
+  background: linear-gradient(to bottom, #ffffff 0%, #f9fff9 100%);
+}
+
+.shake-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1a1f3a;
+  margin-bottom: 20rpx;
+}
+
+.shake-info {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.shake-tip {
+  font-size: 26rpx;
+  color: #d32f2f;
+  font-weight: 600;
+  margin-bottom: 40rpx;
+}
+
+.coins-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40rpx 0;
+  flex-wrap: nowrap;
+  perspective: 1000rpx; /* 3D 透视 */
+}
+
+/* 删除重复定义，避免冲突 */
+
+/* 包裹层：用 2D 变换做翻转效果，兼容性更好 */
+.coin-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.4s ease-in-out;
+}
+
+.coin-inner .leaf-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: filter 0.4s ease-in-out;
+}
+
+/* 叶子容器：支持 3D 变换 */
+.coin {
+  width: 200rpx;
+  height: 240rpx;
+  margin: 0 15rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+/* 清理完成 */
+
+/* 咨询动画：绕 Y 轴连续旋转，慢一点更优雅 */
+.coin.spinning .coin-inner {
+  animation: rotate-y 0.8s ease-in-out infinite;
+}
+
+@keyframes rotate-y {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* 阳面（正面）：0° 朝前 */
+.coin.yang .coin-inner {
+  transform: rotateY(0deg);
+}
+
+.coin.yang .leaf-img {
+  filter: brightness(1.1) saturate(1.2);
+}
+
+/* 阴面（反面）：180° 翻转 + 暗色效果 */
+.coin.yin .coin-inner {
+  transform: rotateY(180deg);
+}
+
+.coin.yin .leaf-img {
+  filter: brightness(0.4) grayscale(0.7) contrast(1.2);
+}
+
+.coin-text {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #4CAF50;
+  text-align: center;
+}
+
+/* 分享按钮 */
+.share-actions {
+  margin-top: 40rpx;
+  text-align: center;
+  padding: 30rpx 0 20rpx;
+  border-top: 2rpx dashed #e0e0e0;
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 30rpx;
+  padding: 28rpx 50rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  min-width: 200rpx;
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.5);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  white-space: nowrap;
+}
+
+.btn-share::after {
+  border: none;
+}
+
+.btn-share:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.5);
+}
+
+/* 移除图标相关样式 */
+
+.share-tip {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 20rpx;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.shake-btn {
+  margin: 40rpx auto;
+  width: 400rpx;
+}
+
+.current-result {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-top: 30rpx;
+}
+
+/* 咨询记录列表 */
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1a1f3a;
+  margin-bottom: 25rpx;
+}
+
+.line-item {
+  padding: 20rpx;
+  margin: 15rpx 0;
+  background-color: #f9f9f9;
+  border-left: 6rpx solid #4CAF50;
+  border-radius: 8rpx;
+}
+
+.line-item.moving {
+  border-left-color: #c62828;
+  color: #c62828;
+}
+
+.line-label {
+  font-weight: bold;
+}
+
+/* 结果显示 */
+.result-text {
+  background-color: #f7f7f7;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  white-space: pre-wrap;
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #1a1f3a;
+  min-height: 150rpx;
+}
+
+.interpret-btn {
+  margin-top: 30rpx;
+  width: 100%;
+}

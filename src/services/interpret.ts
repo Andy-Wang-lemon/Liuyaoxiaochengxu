@@ -4,8 +4,11 @@ import { CalculationResult, InputPayload } from "../types.js";
 
 async function callQwenDashScope(prompt: string): Promise<string> {
   const apiKey = process.env.DASHSCOPE_API_KEY;
-  if (!apiKey) {
-    throw new Error("缺少环境变量 DASHSCOPE_API_KEY（百炼 API Key）");
+  const accessKeyId = process.env.ALIYUN_ACCESS_KEY_ID;
+  const accessKeySecret = process.env.ALIYUN_ACCESS_KEY_SECRET;
+  
+  if (!apiKey && (!accessKeyId || !accessKeySecret)) {
+    throw new Error("缺少API配置：需要 DASHSCOPE_API_KEY 或 ALIYUN_ACCESS_KEY_ID + ALIYUN_ACCESS_KEY_SECRET");
   }
 
   const model = process.env.QWEN_MODEL || "qwen-turbo";
@@ -24,15 +27,26 @@ async function callQwenDashScope(prompt: string): Promise<string> {
     },
   });
 
+  // 构建请求头
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(requestBody).toString(),
+  };
+
+  if (apiKey) {
+    // 使用API Key认证
+    headers.Authorization = `Bearer ${apiKey}`;
+  } else {
+    // 使用AccessKey认证
+    headers["X-DashScope-SSE"] = "disable";
+    headers["Authorization"] = `DASHSCOPE ${accessKeyId}:${accessKeySecret}`;
+  }
+
   const options: https.RequestOptions = {
     method: "POST",
-    hostname: "dashscope.aliyuncs.com",
+    hostname: "dashscope.aliyuncs.com", 
     path: "/api/v1/services/aigc/text-generation/generation",
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(requestBody),
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers,
     timeout: timeoutMs,
   };
 
@@ -160,7 +174,7 @@ export async function interpretWithGemini(
   result: CalculationResult,
 ): Promise<string> {
   // 没配 key 就给提示（和你原来风格一致）
-  if (!process.env.DASHSCOPE_API_KEY) {
+  if (!process.env.DASHSCOPE_API_KEY && (!process.env.ALIYUN_ACCESS_KEY_ID || !process.env.ALIYUN_ACCESS_KEY_SECRET)) {
     return [
       "（提示）AI 解卦未启用：缺少环境变量 DASHSCOPE_API_KEY",
       "",

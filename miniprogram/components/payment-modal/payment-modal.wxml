@@ -1,0 +1,54 @@
+<!--components/payment-modal/payment-modal.wxml-->
+<view class="payment-modal" catchtap="handleMaskTap">
+  <view class="payment-content" catchtap="stopPropagation">
+    <view class="close-btn" bindtap="handleClose">×</view>
+    
+    <view class="payment-header">
+      <view class="payment-title">支付解卦费用</view>
+      <view class="payment-amount">¥{{amount}}</view>
+      <view class="payment-desc">支付{{amount}}元可以获得排盘结果和解卦结果</view>
+    </view>
+    
+    <view class="payment-method">
+      <view class="payment-method-icon">微</view>
+      <view class="payment-method-text">微信支付</view>
+    </view>
+    
+    <!-- 二维码显示区域 -->
+    <view class="qrcode-container" wx:if="{{qrCode && !success}}">
+      <image class="qrcode-image" src="{{qrCode}}" mode="aspectFit" />
+      <view class="qrcode-tip">请使用微信扫码支付</view>
+      <view class="qrcode-status">{{statusText}}</view>
+    </view>
+    
+    <!-- 加载状态 -->
+    <view class="payment-loading" wx:if="{{loading && !qrCode}}">
+      正在生成支付二维码...
+    </view>
+    
+    <!-- 成功状态 -->
+    <view class="payment-success" wx:if="{{success}}">
+      ✓ 支付成功！
+    </view>
+    
+    <!-- 错误信息 -->
+    <view class="payment-error" wx:if="{{error}}">
+      {{error}}
+    </view>
+    
+    <!-- 按钮区域 -->
+    <view class="payment-buttons">
+      <button class="payment-btn payment-btn-cancel" bindtap="handleClose">
+        {{success ? '关闭' : '取消'}}
+      </button>
+      <button 
+        wx:if="{{!qrCode && !success}}"
+        class="payment-btn payment-btn-primary" 
+        disabled="{{loading}}"
+        bindtap="handleConfirm"
+      >
+        {{loading ? '处理中...' : '生成二维码'}}
+      </button>
+    </view>
+  </view>
+</view>
